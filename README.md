@@ -1,2 +1,2 @@
-# mssivimss-formato-pagare
-CU022_GenerarFormatoPagare_SIVIMSS
+mssivimss-formatopagare
+#CU022_GenerarFormatoPagare_SIVIMSS
