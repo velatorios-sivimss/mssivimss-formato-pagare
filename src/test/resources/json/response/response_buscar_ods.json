@@ -1,0 +1,43 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": {
+        "content": [
+            {
+                "estatusPago": "Pendiente",
+                "fechaODS": "02/04/2023",
+                "estatusODS": "Generada",
+                "idContratante": 2,
+                "folioODS": "876543210",
+                "nomContratante": "JOSE SANCHEZ MARTINEZ",
+                "id": 2
+            }
+        ],
+        "pageable": {
+            "sort": {
+                "empty": true,
+                "sorted": false,
+                "unsorted": true
+            },
+            "offset": 0,
+            "pageNumber": 0,
+            "pageSize": 10,
+            "unpaged": false,
+            "paged": true
+        },
+        "last": true,
+        "totalPages": 1,
+        "totalElements": 1,
+        "size": 10,
+        "number": 0,
+        "sort": {
+            "empty": true,
+            "sorted": false,
+            "unsorted": true
+        },
+        "first": true,
+        "numberOfElements": 1,
+        "empty": false
+    }
+}

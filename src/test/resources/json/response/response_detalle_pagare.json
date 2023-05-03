@@ -1,0 +1,10 @@
+{
+    "error": false,
+    "codigo": 200,
+    "mensaje": "Exito",
+    "datos": [
+        {
+            "detalle": 2
+        }
+    ]
+}

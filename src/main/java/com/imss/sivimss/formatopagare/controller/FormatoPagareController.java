@@ -24,7 +24,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
-@RequestMapping("/v1/pagare")
+@RequestMapping("/pagare")
 public class FormatoPagareController {
 	
 	@Autowired
@@ -76,6 +76,18 @@ public class FormatoPagareController {
 	public CompletableFuture<?> detalle(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
 		Response<?> response = formatoPagareService.detallePagare(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/genera-docto")
+	public CompletableFuture<?> generarDocumento(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = formatoPagareService.descargarDocumento(request, authentication);
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 		

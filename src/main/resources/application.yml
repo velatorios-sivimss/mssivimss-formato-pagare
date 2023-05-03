@@ -1,7 +1,7 @@
 server:
   port: 8080
   servlet:
-    contextPath: /mssivimss-formatopagare
+    contextPath: /mssivimss-formatopagare/v1
 spring:
   mvc:
     pathmatch:

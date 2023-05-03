@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.imss.sivimss.formatopagare.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.formatopagare.util.Response;
+import com.imss.sivimss.formatopagare.exception.BadRequestException;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
 import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.AppConstantes;
@@ -37,9 +38,6 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
 	@Value("${endpoints.dominio-crear}")
 	private String urlGenericoCrear;
-	
-	@Value("${endpoints.dominio-actualizar}")
-	private String urlGenericoActualizar;
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
@@ -97,7 +95,15 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 
 	@Override
 	public Response<?> detallePagare(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		PagareServicioDto pagareDto = gson.fromJson(datosJson, PagareServicioDto.class);
+		if (pagareDto.getId() == null) {
+			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
+		}
 		PagareServicio pagareServicio = new PagareServicio();
+		pagareServicio.setId(pagareDto.getId());
 		
 		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request).getDatos(), urlGenericoConsulta, authentication);
 	}
@@ -116,8 +122,12 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 
 	@Override
 	public Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
+		
+		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, nombrePdfReportes);
+		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 
 }

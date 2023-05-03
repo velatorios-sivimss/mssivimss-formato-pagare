@@ -12,45 +12,72 @@ public class ConvertirImporteLetra {
 		// Obtiene decena
 		int iDecena = iImporte%10;
 		iImporte = iImporte/10;
-		if ((iUnidad==0) && (iDecena>0))
+		if (iUnidad==0 && iDecena>0) {
 			strImporte = decenaEnTexto(iDecena);
-		else if (iDecena==1)
+		} else if (iDecena==1) {
 			strImporte = decenas(10+iUnidad);
-		else if (iDecena > 1)
-			strImporte = decenaEnTexto(iDecena) + " y " + strImporte;
+		} else if (iDecena > 1) {
+			strImporte = decenaEnTexto(iDecena) + " Y " + strImporte;
+		}
 		
 		// Obtiene centena
 		int iCentena = iImporte%10;
-		if ((iCentena!=1) && (iCentena!=5) && (iCentena!=9) && (iCentena!=0))
-			strImporte = unidadEnTexto(iCentena) + "cientos" + " " + strImporte;
-		else if ((iCentena==1) || (iCentena==5) || (iCentena==9))
+		iImporte = iImporte/10;
+		if ((iCentena!=1) && (iCentena!=5) && (iCentena!=9) && (iCentena!=0)) {
+			strImporte = unidadEnTexto(iCentena) + "CIENTOS " + strImporte;
+		} else if ((iCentena==1) || (iCentena==5) || (iCentena==9)) {
 			strImporte = centenaEnTexto(iCentena) + " " + strImporte;
+		}
 		
-		return strImporte;
+		// Obtiene millar
+		int iMillar = iImporte%10;
+		if (!(iImporte > 10 && iImporte < 20)) {
+			if (iMillar == 1) {
+				strImporte = "MIL " + strImporte; 
+			} else {
+				strImporte = unidadEnTexto(iMillar) + " MIL " + strImporte;
+			}
+		}
+		iImporte = iImporte/10;
+		
+		// Obtiene diez millar
+		if (iImporte > 0) {
+			int iDMillar = iImporte%10;
+			//iImporte = iImporte/10;
+			if (iMillar==0 && iDMillar>0) {
+				strImporte = decenaEnTexto(iDMillar) + " MIL " + strImporte;
+			} else if (iDMillar==1) {
+				strImporte = decenas(10+iMillar) + " MIL " + strImporte;
+			} else if (iDMillar > 1) {
+				strImporte = decenaEnTexto(iDMillar) + " Y " + strImporte;
+			}
+		}
+		
+		return strImporte + " 00/100 M.N.";
 	}
 	
 	private static String unidadEnTexto(int iNumero){
 		 switch(iNumero){
 			case 1:
-				return "uno";
+				return "UNO";
 			case 2:
-				return "dos";
+				return "DOS";
 			case 3:
-				return "tres";
+				return "TRES";
 			case 4:
-				return "cuatro";
+				return "CUATRO";
 			case 5:
-				return "cinco";
+				return "CINCO";
 			case 6:
-				return "seis";
+				return "SEIS";
 			case 7:
-				return "siete";
+				return "SIETE";
 			case 8:
-				return "ocho";
+				return "OCHO";
 			case 9:
-				return "nueve";
+				return "NUEVE";
 			case 0:
-				return "cero";
+				return "CERO";
 			default:
 				return "";
 		 }
@@ -59,23 +86,23 @@ public class ConvertirImporteLetra {
 	private static String decenaEnTexto(int iDecena){
 		  switch (iDecena){
 			case 1:
-				return "diez";
+				return "DIEZ";
 			case 2:
-				return "veinte";
+				return "VEINTE";
 			case 3:
-				return "treinta";
+				return "TREINTA";
 			case 4:
-				return "cuarenta";
+				return "CUARENTA";
 			case 5:
-				return "cincuenta";
+				return "CINCUENTA";
 			case 6:
-				return "sesenta";
+				return "SESENTA";
 			case 7:
-				return "setenta";
+				return "SETENTA";
 			case 8:
-				return "ochenta";
+				return "OCHENTA";
 			case 9:
-				return "noventa";		
+				return "NOVENTA";		
 			default:
 				return "";
 		  }
@@ -84,23 +111,23 @@ public class ConvertirImporteLetra {
 	private static String decenas(int iDecena) {
 		  switch (iDecena){
 			case 11:
-				return "once";
+				return "ONCE";
 			case 12:
-				return "doce";
+				return "DOCE";
 			case 13:
-				return "trece";
+				return "TRECE";
 			case 14:
-				return "catorce";
+				return "CATORCE";
 			case 15:
-				return "quince";
+				return "QUINCE";
 			case 16:
-				return "dieciseis";
+				return "DIECISEIS";
 			case 17:
-				return "diecisiete";
+				return "DIECISIETE";
 			case 18:
-				return "dieciocho";
+				return "DIECIOCHO";
 			case 19:
-				return "diecinueve";		
+				return "DIECINUEVE";		
 			default:
 				return "";
 		  }
@@ -109,23 +136,23 @@ public class ConvertirImporteLetra {
 	private static String centenaEnTexto(int iCentena){
 		  switch (iCentena){
 			case 1:
-				return "ciento";
+				return "CIENTO";
 			case 2:
-				return "doscientos";
+				return "DOSCIENTOS";
 			case 3:
-				return "trescientos";
+				return "TRESCIENTOS";
 			case 4:
-				return "cuatrocientos";
+				return "CUATROCIENTOS";
 			case 5:
-				return "quinientos";
+				return "QUINIENTOS";
 			case 6:
-				return "seiscientos";
+				return "SEISCIENTOS";
 			case 7:
-				return "setecientos";
+				return "SETECIENTOS";
 			case 8:
-				return "ochocientos";
+				return "OCHOCIENTOS";
 			case 9:
-				return "novecientos";				
+				return "NOVECIENTOS";				
 			default:
 				return "";
 		  }
