@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.imss.sivimss.formatopagare.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.formatopagare.util.Response;
+import com.imss.sivimss.formatopagare.model.request.UsuarioDto;
 import com.imss.sivimss.formatopagare.exception.BadRequestException;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
 import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
@@ -109,13 +110,20 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	}
 
 	@Override
-	public Response<?> generarPagare(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	public Response<?> agregarPagare(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		PagareServicioDto pagareDto = gson.fromJson(datosJson, PagareServicioDto.class);
+		UsuarioDto usuarioDto = gson.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
+		
+		PagareServicio pagareServicio = new PagareServicio(pagareDto);
+		pagareServicio.setIdUsuarioAlta(usuarioDto.getIdUsuario());
+		return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlGenericoCrear, authentication);
 	}
 
 	@Override
-	public Response<?> descargarPagare(DatosRequest request, Authentication authentication) throws IOException {
+	public Response<?> generarPagare(DatosRequest request, Authentication authentication) throws IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -4,7 +4,15 @@
     "mensaje": "Exito",
     "datos": [
         {
-            "detalle": 2
+            "fechaODS": "26-04-2023",
+            "redito": 6,
+            "hora": "17:35:49",
+            "folioODS": "987654321",
+            "nomContratante": "JUAN LOPEZ PEREZ",
+            "nomAgente": "usuario usuario usuario",
+            "importe": 76692.0,
+            "Domicilio": "CALLE 1 1 ERMITA",
+            "fechaPago": "2023-05-04"
         }
     ]
 }

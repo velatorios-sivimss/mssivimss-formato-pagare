@@ -78,14 +78,14 @@ public class OrdenServicio {
     	StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO AS id, os.CVE_FOLIO AS folioODS, " + fechaCotejo + " AS fechaODS, \n");
 		query.append("os.ID_CONTRATANTE AS idContratante, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
-		query.append("'Generada' AS estatusODS, CASE WHEN ISNULL(pb.CVE_ESTATUS_PAGO) THEN 'Pendiente' ELSE 'Genarado' END AS estatusPago \n");
+		query.append("'Generada' AS estatusODS, CASE WHEN ISNULL(pb.CVE_ESTATUS_PAGO) THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
 		query.append("LEFT JOIN SVC_INFORMACION_SERVICIO inf ON (os.ID_ORDEN_SERVICIO = inf.ID_ORDEN_SERVICIO) \n");
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
 		query.append("LEFT JOIN SVC_VELATORIO vel ON (pb.ID_VELATORIO = vel.ID_VELATORIO) \n");
-		query.append("WHERE os.CVE_ESTATUS = 2 \n");
+		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
 		
 		return query;
     }

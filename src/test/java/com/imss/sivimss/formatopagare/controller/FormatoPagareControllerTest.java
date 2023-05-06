@@ -51,7 +51,7 @@ public class FormatoPagareControllerTest extends BaseTest {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.buscarODS(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/buscar_ods_mock.json"), JsonUtil.readFromJson("json/response/response_buscar_ods.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/pagare/buscar")
+	       this.mockMvc.perform(post("/pagare/buscar")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)
@@ -60,15 +60,49 @@ public class FormatoPagareControllerTest extends BaseTest {
 	                .andDo(print())
 	                .andExpect(status().isOk());
 	 }
+     
+     @Test
+	 @DisplayName("importe letra")
+	 @Order(2)
+	 public void importeLetra() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.importeLetra(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/importe_pagare_mock.json"), JsonUtil.readFromJson("json/response/response_importe_pagare.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/pagare/importe")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/importe_pagare_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
+     
+     @Test
+	 @DisplayName("crear pagare")
+	 @Order(3)
+	 public void crear() throws Exception {
+	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
+	       MockModCatalogosClient.crearPagare(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/agregar_pagare_mock.json"), JsonUtil.readFromJson("json/response/response_agregar_pagare.json"), myToken, mockServer);
+	       this.mockMvc.perform(post("/pagare/agregar")
+	                    .contentType(MediaType.APPLICATION_JSON)
+	                    .accept(MediaType.APPLICATION_JSON)
+	                    .header("Authorization","Bearer " + myToken)
+	                    .content(JsonUtil.readFromJson("json/request/agregar_pagare_controller.json"))
+	                    .with(csrf()))
+	                .andDo(print())
+	                .andExpect(status().isOk());
+	 }
 	 
 	 @Test
 	 @DisplayName("detalle pagare")
-	 @Order(2)
+	 @Order(4)
 	 public void detalle() throws Exception {
 	       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	       String myToken = jwtTokenProvider.createTokenTest(authentication.getPrincipal().toString());
 	       MockModCatalogosClient.detallePagare(HttpStatusCode.OK_200, JsonUtil.readFromJson("json/request/detalle_pagare_mock.json"), JsonUtil.readFromJson("json/response/response_detalle_pagare.json"), myToken, mockServer);
-	       this.mockMvc.perform(post("/v1/pagare/detalle")
+	       this.mockMvc.perform(post("/pagare/detalle")
 	                    .contentType(MediaType.APPLICATION_JSON)
 	                    .accept(MediaType.APPLICATION_JSON)
 	                    .header("Authorization","Bearer " + myToken)

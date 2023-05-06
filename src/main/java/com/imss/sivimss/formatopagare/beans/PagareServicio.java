@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import com.imss.sivimss.formatopagare.util.AppConstantes;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
+import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.DatosRequest;
 import com.imss.sivimss.formatopagare.util.QueryHelper;
 import com.imss.sivimss.formatopagare.util.ConvertirImporteLetra;
@@ -25,28 +26,54 @@ import lombok.Setter;
 public class PagareServicio {
 
 	private Integer id;
+	private Integer idODS;
 	private Integer importe;
+	private Integer redito;
+	private Integer idUsuarioAlta;
+	private Integer idUsuarioModifica;
+	
+	public PagareServicio(PagareServicioDto pagareDto) {
+		this.idODS = pagareDto.getIdODS();
+		this.importe = pagareDto.getImporte();
+		this.redito = pagareDto.getRedito();
+	}
 	
 	public String importeLetra() {
 		return ConvertirImporteLetra.importeEnTexto(this.importe);
 	}
 	
-	
 	public DatosRequest detallPagare(DatosRequest request) {
-		//String idPagare = request.getDatos().get("datos").get("id").toString();
-		StringBuilder query = new StringBuilder("SELECT 2 AS detalle FROM DUAL");
-		// Query
+		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, date_format(os.FEC_ALTA, \"%d-%m-%Y\") AS fechaODS, \n");
+		query.append("pag.TIM_HORA AS hora, pag.IMP_PAGO AS importe, pag.NUM_REDITO AS redito, \n");
+		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
+		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS Domicilio, \n");
+		query.append("pag.FEC_ALTA AS fechaPago, \n");
+		query.append("CONCAT(usu.NOM_USUARIO,' ',usu.NOM_APELLIDO_PATERNO,' ',usu.NOM_APELLIDO_MATERNO) AS nomAgente \n");
+		query.append("FROM SVC_ORDEN_SERVICIO os \n");
+		query.append("JOIN SVT_PAGARE pag ON (os.ID_ORDEN_SERVICIO = pag.ID_ODS) \n");
+		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
+		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
+		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
+		query.append("JOIN SVT_USUARIOS usu ON (pag.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
+		query.append("WHERE pag.ID_PAGARE = " + this.id);
+		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
-		request.getDatos().remove("id");
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 	
-	public DatosRequest generaPagare() {
+	public DatosRequest crearPagare() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
-		final QueryHelper q = new QueryHelper("");
-		// Armar query
+		final QueryHelper q = new QueryHelper("INSERT INTO SVT_PAGARE");
+		q.agregarParametroValues("ID_ODS", "" + this.idODS);
+		q.agregarParametroValues("TIM_HORA", "TIME (NOW())");
+		q.agregarParametroValues("IMP_PAGO", "" + this.importe);
+		q.agregarParametroValues("NUM_REDITO", "" + this.redito);
+		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
+		q.agregarParametroValues("DES_CANTIDAD", "''");
+		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
+		
 		String query = q.obtenerQueryInsertar();
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
 		parametro.put(AppConstantes.QUERY, encoded);

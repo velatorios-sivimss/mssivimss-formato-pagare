@@ -17,9 +17,9 @@ public interface FormatoPagareService {
 	
 	Response<?> detallePagare(DatosRequest request, Authentication authentication) throws IOException;
 	
-	Response<?> generarPagare(DatosRequest request, Authentication authentication) throws IOException;
+	Response<?> agregarPagare(DatosRequest request, Authentication authentication) throws IOException;
 	
-	Response<?> descargarPagare(DatosRequest request, Authentication authentication) throws IOException;
+	Response<?> generarPagare(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<?> descargarDocumento(DatosRequest request, Authentication authentication) throws IOException;
 
