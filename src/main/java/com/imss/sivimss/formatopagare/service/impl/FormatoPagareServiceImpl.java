@@ -20,6 +20,7 @@ import com.imss.sivimss.formatopagare.util.Response;
 import com.imss.sivimss.formatopagare.model.request.UsuarioDto;
 import com.imss.sivimss.formatopagare.exception.BadRequestException;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
+import com.imss.sivimss.formatopagare.model.request.FormatoPagareDto;
 import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.AppConstantes;
 import com.imss.sivimss.formatopagare.util.ConvertirGenerico;
@@ -43,11 +44,11 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
-	private static final String nombrePdfNotaRem = "reportes/generales/FormatoPagare.jrxml";
+	private static final String NOMBREPDFPAGARE = "reportes/generales/FormatoPagare.jrxml";
 	
-	private static final String nombrePdfReportes = "reportes/generales/ReporteODSPagare.jrxml";
+	private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteODSPagare.jrxml";
 	
-	private static final String infoNoEncontrada = "No se encontró información relacionada a tu búsqueda.";
+	private static final String INFONOENCONTRADA = "No se encontró información relacionada a tu búsqueda.";
 	
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
@@ -76,7 +77,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 				authentication);
 		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
-			response.setMensaje(infoNoEncontrada);
+			response.setMensaje(INFONOENCONTRADA);
 	    }
 		
 		return response;
@@ -124,8 +125,14 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 
 	@Override
 	public Response<?> generarPagare(DatosRequest request, Authentication authentication) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Gson gson = new Gson();
+
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		FormatoPagareDto formatoPagareDto = gson.fromJson(datosJson, FormatoPagareDto.class);
+		PagareServicio pagareServicio = new PagareServicio();
+		
+		Map<String, Object> envioDatos = pagareServicio.imprimirNotaRem(formatoPagareDto, NOMBREPDFPAGARE);
+		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 
 	@Override
@@ -134,7 +141,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
-		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, nombrePdfReportes);
+		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, NOMBREPDFREPORTE);
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 

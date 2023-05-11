@@ -85,7 +85,7 @@ public class FormatoPagareController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
 	@PostMapping("/agregar")
-	public CompletableFuture<?> generar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+	public CompletableFuture<?> agregar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
 		Response<?> response = formatoPagareService.agregarPagare(request, authentication);
 		return CompletableFuture
@@ -96,7 +96,19 @@ public class FormatoPagareController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
 	@TimeLimiter(name = "msflujo")
-	@PostMapping("/genera-docto")
+	@PostMapping("/pagare-pdf")
+	public CompletableFuture<?> generar(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = formatoPagareService.generarPagare(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
+	}
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/generar-docto")
 	public CompletableFuture<?> generarDocumento(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
 		
 		Response<?> response = formatoPagareService.descargarDocumento(request, authentication);

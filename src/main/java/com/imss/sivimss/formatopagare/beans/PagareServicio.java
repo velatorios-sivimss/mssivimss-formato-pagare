@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import com.imss.sivimss.formatopagare.util.AppConstantes;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
+import com.imss.sivimss.formatopagare.model.request.FormatoPagareDto;
 import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.DatosRequest;
 import com.imss.sivimss.formatopagare.util.QueryHelper;
@@ -81,5 +82,23 @@ public class PagareServicio {
 		
 		return request;
 	}
+	
+	 public Map<String, Object> imprimirNotaRem(FormatoPagareDto formatoDto,String nombrePdfNotaRem){
+		Map<String, Object> envioDatos = new HashMap<>();
+		envioDatos.put("folioPagare", formatoDto.getFolioPagare());
+		envioDatos.put("importe", "$" + formatoDto.getImporte());
+		envioDatos.put("cantidad", formatoDto.getCantidad());
+		envioDatos.put("folioODS", formatoDto.getFolioPagare());
+		envioDatos.put("fechaODS", formatoDto.getFechaODS());
+		envioDatos.put("redito", formatoDto.getRedito());
+		envioDatos.put("nomContratante", formatoDto.getNomContratante());
+		envioDatos.put("domContratante", formatoDto.getDomContratante());
+		envioDatos.put("fechaPagare", formatoDto.getFechaPagare());
+		envioDatos.put("nomUsuario", formatoDto.getNomUsuario());
+		envioDatos.put("tipoReporte", "pdf");
+		envioDatos.put("rutaNombreReporte", nombrePdfNotaRem);
+		
+		return envioDatos;
+	 }
 	
 }
