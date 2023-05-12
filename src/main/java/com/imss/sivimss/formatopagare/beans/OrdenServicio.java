@@ -30,7 +30,7 @@ public class OrdenServicio {
 	private Integer estatusODS;
     private Integer estatusPago;
 	
-	private static final String fechaCotejo =  "DATE_FORMAT(inf.FEC_CORTEJO,'%d/%m/%Y')";
+	private static final String fechaCotejo =  "DATE_FORMAT(os.FEC_ALTA,'%d/%m/%Y')";
 	
 	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda) {
 		StringBuilder query = armaQuery();
