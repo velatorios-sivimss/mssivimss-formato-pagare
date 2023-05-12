@@ -30,7 +30,7 @@ public class FormatoPagareDto {
 	
 	private String domContratante;
 	
-	private String fechaPagare;
+	private String fechaPago;
 	
 	private String nomUsuario;
 
