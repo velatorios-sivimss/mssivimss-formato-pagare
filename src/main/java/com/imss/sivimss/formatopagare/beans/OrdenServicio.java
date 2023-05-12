@@ -30,10 +30,8 @@ public class OrdenServicio {
 	private Integer estatusODS;
     private Integer estatusPago;
 	
-	private static final String fechaCotejo =  "DATE_FORMAT(os.FEC_ALTA,'%d/%m/%Y')";
-	
-	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda) {
-		StringBuilder query = armaQuery();
+	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) {
+		StringBuilder query = armaQuery(formatoFecha);
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
@@ -48,9 +46,9 @@ public class OrdenServicio {
 		return request;
 	}
 	
-	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda) {
+	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) {
 			
-	    	StringBuilder query = armaQuery();
+	    	StringBuilder query = armaQuery(formatoFecha);
 	    	if (busqueda.getIdNivel() > 1 && busqueda.getIdVelatorio() != null) {
 				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 			}
@@ -64,7 +62,7 @@ public class OrdenServicio {
 	    		query.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + busqueda.getNomContratante() + "%') \n");
 	    	}
 	    	if (busqueda.getFecIniODS() != null) {
-	    	    query.append(" AND " + fechaCotejo + " BETWEEN '" + busqueda.getFecIniODS() + "' AND '" + busqueda.getFecFinODS() + "' \n");
+	    	    query.append(" AND DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') BETWEEN '" + busqueda.getFecIniODS() + "' AND '" + busqueda.getFecFinODS() + "' \n");
 	    	}
 	    	query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
 	    	
@@ -74,8 +72,8 @@ public class OrdenServicio {
 			return request;
 	}
 	 
-    private StringBuilder armaQuery() {
-    	StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO AS id, os.CVE_FOLIO AS folioODS, " + fechaCotejo + " AS fechaODS, \n");
+    private StringBuilder armaQuery(String formatoFecha) {
+    	StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO AS id, os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
 		query.append("os.ID_CONTRATANTE AS idContratante, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("'Generada' AS estatusODS, CASE WHEN ISNULL(pb.CVE_ESTATUS_PAGO) THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
@@ -90,7 +88,7 @@ public class OrdenServicio {
 		return query;
     }
     
-    public Map<String, Object> generarReporte(BusquedaDto reporteDto,String nombrePdfReportes){
+    public Map<String, Object> generarReporte(BusquedaDto reporteDto,String nombrePdfReportes, String formatoFecha){
 		Map<String, Object> envioDatos = new HashMap<>();
 		StringBuilder condicion = new StringBuilder(" ");
 		if (reporteDto.getIdVelatorio() != null) {
@@ -105,7 +103,7 @@ public class OrdenServicio {
     		condicion.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + reporteDto.getNomContratante() + "%') \n");
 		}
     	if (reporteDto.getFecIniODS() != null) {
-    	    condicion.append(" AND " + fechaCotejo + " BETWEEN '" + reporteDto.getFecIniODS() + "' AND '" + reporteDto.getFecFinODS() + "' \n");
+    	    condicion.append(" AND DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') BETWEEN '" + reporteDto.getFecIniODS() + "' AND '" + reporteDto.getFecFinODS() + "' \n");
     	}
 		
 		envioDatos.put("condicion", condicion.toString());

@@ -44,6 +44,9 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
+	@Value("${formato_fecha}")
+	private String formatoFecha;
+	
 	private static final String NOMBREPDFPAGARE = "reportes/generales/FormatoPagare.jrxml";
 	
 	private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteODSPagare.jrxml";
@@ -61,7 +64,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 
-		return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda).getDatos(), urlGenericoPaginado, 
+		return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlGenericoPaginado, 
 				authentication);
 	}
 
@@ -73,7 +76,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		OrdenServicio ordenServicio = new OrdenServicio();
 		
-		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.buscarODS(request, busqueda).getDatos(), urlGenericoPaginado,
+		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.buscarODS(request, busqueda, formatoFecha).getDatos(), urlGenericoPaginado,
 				authentication);
 		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
@@ -107,7 +110,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		PagareServicio pagareServicio = new PagareServicio();
 		pagareServicio.setId(pagareDto.getId());
 		
-		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request).getDatos(), urlGenericoConsulta, authentication);
+		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlGenericoConsulta, authentication);
 	}
 
 	@Override
@@ -141,7 +144,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
-		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, NOMBREPDFREPORTE);
+		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, NOMBREPDFREPORTE, formatoFecha);
 		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
 	}
 

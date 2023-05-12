@@ -43,8 +43,8 @@ public class PagareServicio {
 		return ConvertirImporteLetra.importeEnTexto(this.importe);
 	}
 	
-	public DatosRequest detallPagare(DatosRequest request) {
-		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, date_format(os.FEC_ALTA, \"%d-%m-%Y\") AS fechaODS, \n");
+	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) {
+		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
 		query.append("pag.TIM_HORA AS hora, pag.IMP_PAGO AS importe, pag.NUM_REDITO AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
@@ -71,7 +71,7 @@ public class PagareServicio {
 		q.agregarParametroValues("TIM_HORA", "TIME (NOW())");
 		q.agregarParametroValues("IMP_PAGO", "" + this.importe);
 		q.agregarParametroValues("NUM_REDITO", "" + this.redito);
-		q.agregarParametroValues("FEC_ALTA", "CURRENT_TIMESTAMP()");
+		q.agregarParametroValues("FEC_ALTA", "DATE (NOW())");
 		q.agregarParametroValues("DES_CANTIDAD", "''");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		
