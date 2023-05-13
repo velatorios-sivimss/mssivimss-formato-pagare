@@ -14,5 +14,5 @@ public class PagareServicioDto {
 	private Integer idODS;
 	private Integer importe;
 	private Integer redito;
-
+	
 }

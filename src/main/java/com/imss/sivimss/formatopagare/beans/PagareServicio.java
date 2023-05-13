@@ -95,7 +95,7 @@ public class PagareServicio {
 		envioDatos.put("domContratante", formatoDto.getDomContratante());
 		envioDatos.put("fechaPagare", formatoDto.getFechaPago());
 		envioDatos.put("nomUsuario", formatoDto.getNomUsuario());
-		envioDatos.put("tipoReporte", "pdf");
+		envioDatos.put("tipoReporte", formatoDto.getTipoReporte());
 		envioDatos.put("rutaNombreReporte", nombrePdfNotaRem);
 		
 		return envioDatos;

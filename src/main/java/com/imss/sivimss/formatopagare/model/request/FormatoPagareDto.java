@@ -30,4 +30,5 @@ public class FormatoPagareDto {
 	
 	private String nomUsuario;
 
+	private String tipoReporte;
 }
