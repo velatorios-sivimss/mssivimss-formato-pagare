@@ -2,10 +2,7 @@ package com.imss.sivimss.formatopagare.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,7 @@ import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.AppConstantes;
 import com.imss.sivimss.formatopagare.util.ConvertirGenerico;
 import com.imss.sivimss.formatopagare.util.DatosRequest;
+import com.imss.sivimss.formatopagare.util.MensajeResponseUtil;
 import com.imss.sivimss.formatopagare.beans.OrdenServicio;
 import com.imss.sivimss.formatopagare.beans.PagareServicio;
 import com.imss.sivimss.formatopagare.service.FormatoPagareService;
@@ -32,14 +30,14 @@ import com.imss.sivimss.formatopagare.service.FormatoPagareService;
 @Service
 public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
-	@Value("${endpoints.dominio-paginado}")
-	private String urlGenericoPaginado;
+	@Value("${endpoints.dominio}")
+	private String urlDominioGenerico;
 	
-	@Value("${endpoints.dominio-consulta}")
-	private String urlGenericoConsulta;
+	private static final String PAGINADO = "paginado";
 	
-	@Value("${endpoints.dominio-crear}")
-	private String urlGenericoCrear;
+	private static final String CONSULTA = "consulta";
+	
+	private static final String CREAR = "crear";
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
@@ -51,7 +49,9 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
 	private static final String NOMBREPDFREPORTE = "reportes/generales/ReporteODSPagare.jrxml";
 	
-	private static final String INFONOENCONTRADA = "No se encontró información relacionada a tu búsqueda.";
+	private static final String INFONOENCONTRADA = "45";
+	
+	private static final String ERROR_DESCARGA = "64";
 	
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
@@ -64,7 +64,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 
-		return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlGenericoPaginado, 
+		return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
 				authentication);
 	}
 
@@ -76,7 +76,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		OrdenServicio ordenServicio = new OrdenServicio();
 		
-		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.buscarODS(request, busqueda, formatoFecha).getDatos(), urlGenericoPaginado,
+		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.buscarODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO,
 				authentication);
 		ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
 		if (datos1.isEmpty()) {
@@ -110,7 +110,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		PagareServicio pagareServicio = new PagareServicio();
 		pagareServicio.setId(pagareDto.getId());
 		
-		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlGenericoConsulta, authentication);
+		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		
 		PagareServicio pagareServicio = new PagareServicio(pagareDto);
 		pagareServicio.setIdUsuarioAlta(usuarioDto.getIdUsuario());
-		return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlGenericoCrear, authentication);
+		return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
 	}
 
 	@Override
@@ -135,7 +135,9 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		PagareServicio pagareServicio = new PagareServicio();
 		
 		Map<String, Object> envioDatos = pagareServicio.imprimirNotaRem(formatoPagareDto, NOMBREPDFPAGARE);
-		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+		Response<?> response = providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+	
+		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
 	@Override
@@ -145,7 +147,9 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		BusquedaDto reporteDto = gson.fromJson(datosJson, BusquedaDto.class);
 		
 		Map<String, Object> envioDatos = new OrdenServicio().generarReporte(reporteDto, NOMBREPDFREPORTE, formatoFecha);
-		return providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+		Response<?> response = providerRestTemplate.consumirServicioReportes(envioDatos, urlReportes, authentication);
+		
+		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
 }

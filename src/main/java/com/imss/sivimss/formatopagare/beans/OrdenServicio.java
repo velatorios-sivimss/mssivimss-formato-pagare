@@ -49,9 +49,13 @@ public class OrdenServicio {
 	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) {
 			
 	    	StringBuilder query = armaQuery(formatoFecha);
-	    	if (busqueda.getIdNivel() > 1 && busqueda.getIdVelatorio() != null) {
+	    	
+	    	if (busqueda.getIdVelatorio() != null) {
 				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 			}
+	    	if (busqueda.getIdDelegacion() != null) {
+	    		query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
+	    	}
 
 	    	if (busqueda.getFolioODS() != null) {
 	    	    query.append(" AND os.CVE_FOLIO = '" + busqueda.getFolioODS() +"' ");
@@ -81,6 +85,7 @@ public class OrdenServicio {
 		query.append("LEFT JOIN SVC_INFORMACION_SERVICIO inf ON (os.ID_ORDEN_SERVICIO = inf.ID_ORDEN_SERVICIO) \n");
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
+		query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
 		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
 		query.append("LEFT JOIN SVC_VELATORIO vel ON (pb.ID_VELATORIO = vel.ID_VELATORIO) \n");
 		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
