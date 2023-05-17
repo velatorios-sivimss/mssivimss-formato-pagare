@@ -104,11 +104,11 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 
 		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		PagareServicioDto pagareDto = gson.fromJson(datosJson, PagareServicioDto.class);
-		if (pagareDto.getId() == null) {
+		if (pagareDto.getIdODS() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
 		}
 		PagareServicio pagareServicio = new PagareServicio();
-		pagareServicio.setId(pagareDto.getId());
+		pagareServicio.setIdODS(pagareDto.getIdODS());
 		
 		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
 	}

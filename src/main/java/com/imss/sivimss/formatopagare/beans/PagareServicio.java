@@ -45,18 +45,18 @@ public class PagareServicio {
 	
 	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) {
 		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
-		query.append("pag.TIM_HORA AS hora, pag.IMP_PAGO AS importe, pag.NUM_REDITO AS redito, os.CVE_FOLIO AS folioPagare, \n");
+		query.append("TIME(os.FEC_ALTA) AS hora, SUBSTRING(pb.DESC_VALOR,1,15) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
-		query.append("pag.FEC_ALTA AS fechaPago, \n");
+		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, \n");
 		query.append("CONCAT(usu.NOM_USUARIO,' ',usu.NOM_APELLIDO_PATERNO,' ',usu.NOM_APELLIDO_MATERNO) AS nomUsuario \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
-		query.append("JOIN SVT_PAGARE pag ON (os.ID_ORDEN_SERVICIO = pag.ID_ODS) \n");
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
-		query.append("JOIN SVT_USUARIOS usu ON (pag.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
-		query.append("WHERE pag.ID_PAGARE = " + this.id);
+		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
+		query.append("JOIN SVT_USUARIOS usu ON (os.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
+		query.append("WHERE os.ID_ORDEN_SERVICIO = " + this.idODS);
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
 		request.getDatos().put(AppConstantes.QUERY, encoded);
