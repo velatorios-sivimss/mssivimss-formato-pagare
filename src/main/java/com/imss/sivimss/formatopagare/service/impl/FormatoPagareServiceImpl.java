@@ -64,6 +64,8 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
 	@Autowired
 	private LogUtil logUtil;
+	
+	private static final Logger log = LoggerFactory.getLogger(FormatoPagareServiceImpl.class);
 
 	@Override
 	public Response<?> consultarODS(DatosRequest request, Authentication authentication) throws IOException {
@@ -77,8 +79,9 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		    return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
 				authentication);
 		} catch (Exception e) {
-	        	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-				return null;
+			log.error(e.getMessage());
+	        logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
 	    }
 	}
 
@@ -124,7 +127,13 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		PagareServicio pagareServicio = new PagareServicio();
 		pagareServicio.setIdODS(pagareDto.getIdODS());
 		
-		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		try {
+		    return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+	    }
 	}
 
 	@Override
@@ -141,6 +150,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		try {
 		    return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
 		 } catch (Exception e) {
+			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 	     }

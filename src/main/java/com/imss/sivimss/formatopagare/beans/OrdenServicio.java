@@ -36,7 +36,7 @@ public class OrdenServicio {
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 			if (busqueda.getIdOficina() == 3) {
-				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+				query.append(" AND os.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 			}
 		} 
 		query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
@@ -52,7 +52,7 @@ public class OrdenServicio {
 	    	StringBuilder query = armaQuery(formatoFecha);
 	    	
 	    	if (busqueda.getIdVelatorio() != null) {
-				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+				query.append(" AND os.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 			}
 	    	if (busqueda.getIdDelegacion() != null) {
 	    		query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
@@ -67,7 +67,7 @@ public class OrdenServicio {
 	    		query.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + busqueda.getNomContratante() + "%') \n");
 	    	}
 	    	if (busqueda.getFecIniODS() != null) {
-	    	    query.append(" AND DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') BETWEEN '" + busqueda.getFecIniODS() + "' AND '" + busqueda.getFecFinODS() + "' \n");
+	    	    query.append(" AND os.FEC_ALTA BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
 	    	}
 	    	query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
 	    	
@@ -83,7 +83,6 @@ public class OrdenServicio {
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("'Generada' AS estatusODS, CASE WHEN ISNULL(pb.CVE_ESTATUS_PAGO) THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
-		query.append("LEFT JOIN SVC_INFORMACION_SERVICIO inf ON (os.ID_ORDEN_SERVICIO = inf.ID_ORDEN_SERVICIO) \n");
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
@@ -98,7 +97,7 @@ public class OrdenServicio {
 		Map<String, Object> envioDatos = new HashMap<>();
 		StringBuilder condicion = new StringBuilder(" ");
 		if (reporteDto.getIdVelatorio() != null) {
-			condicion.append(" AND fin.ID_VELATORIO = ").append(reporteDto.getIdVelatorio());
+			condicion.append(" AND os.ID_VELATORIO = ").append(reporteDto.getIdVelatorio());
 		}
 		if (reporteDto.getFolioODS() != null) {
     	    condicion.append(" AND os.CVE_FOLIO = '" + reporteDto.getFolioODS() +"' ");
@@ -109,7 +108,7 @@ public class OrdenServicio {
     		condicion.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + reporteDto.getNomContratante() + "%') \n");
 		}
     	if (reporteDto.getFecIniODS() != null) {
-    	    condicion.append(" AND DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') BETWEEN '" + reporteDto.getFecIniODS() + "' AND '" + reporteDto.getFecFinODS() + "' \n");
+    	    condicion.append(" AND os.FEC_ALTA BETWEEN STR_TO_DATE('" + reporteDto.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinODS() + "','" + formatoFecha + "')");
     	}
 		
 		envioDatos.put("condicion", condicion.toString());
