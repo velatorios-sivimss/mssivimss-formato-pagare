@@ -1,5 +1,6 @@
 package com.imss.sivimss.formatopagare.beans;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +31,7 @@ public class OrdenServicio {
 	private Integer estatusODS;
     private Integer estatusPago;
 	
-	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) {
+	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = armaQuery(formatoFecha);
 		if (busqueda.getIdOficina() > 1) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
@@ -40,13 +41,13 @@ public class OrdenServicio {
 		} 
 		query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
         
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		
 		return request;
 	}
 	
-	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) {
+	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) throws UnsupportedEncodingException {
 			
 	    	StringBuilder query = armaQuery(formatoFecha);
 	    	
@@ -70,7 +71,7 @@ public class OrdenServicio {
 	    	}
 	    	query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
 	    	
-	    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+	    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 			request.getDatos().put(AppConstantes.QUERY, encoded);
 	    	
 			return request;
@@ -87,7 +88,7 @@ public class OrdenServicio {
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
 		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
-		query.append("LEFT JOIN SVC_VELATORIO vel ON (pb.ID_VELATORIO = vel.ID_VELATORIO) \n");
+		query.append("JOIN SVC_VELATORIO vel ON (os.ID_VELATORIO = vel.ID_VELATORIO) \n");
 		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
 		
 		return query;

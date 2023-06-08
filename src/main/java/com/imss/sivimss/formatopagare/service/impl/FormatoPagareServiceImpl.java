@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.imss.sivimss.formatopagare.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.formatopagare.util.Response;
+import com.imss.sivimss.formatopagare.util.LogUtil;
 import com.imss.sivimss.formatopagare.model.request.UsuarioDto;
 import com.imss.sivimss.formatopagare.exception.BadRequestException;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
@@ -53,8 +57,13 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
 	private static final String ERROR_DESCARGA = "64";
 	
+	private static final String ALTA = "alta";
+	
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
+	
+	@Autowired
+	private LogUtil logUtil;
 
 	@Override
 	public Response<?> consultarODS(DatosRequest request, Authentication authentication) throws IOException {
@@ -64,8 +73,13 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 
-		return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
+		try {
+		    return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
 				authentication);
+		} catch (Exception e) {
+	        	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+				return null;
+	    }
 	}
 
 	@Override
@@ -123,7 +137,13 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		
 		PagareServicio pagareServicio = new PagareServicio(pagareDto);
 		pagareServicio.setIdUsuarioAlta(usuarioDto.getIdUsuario());
-		return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
+		
+		try {
+		    return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
+		 } catch (Exception e) {
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
+			return null;
+	     }
 	}
 
 	@Override
