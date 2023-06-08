@@ -1,5 +1,6 @@
 package com.imss.sivimss.formatopagare.beans;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,9 +44,9 @@ public class PagareServicio {
 		return ConvertirImporteLetra.importeEnTexto(this.importe);
 	}
 	
-	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) {
+	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
-		query.append("TIME(os.FEC_ALTA) AS hora, SUBSTRING(pb.DESC_VALOR,1,15) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
+		query.append("TIME(os.FEC_ALTA) AS hora, IFNULL(pd.IMP_IMPORTE,0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
 		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, \n");
@@ -55,15 +56,16 @@ public class PagareServicio {
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
 		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
+		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
 		query.append("JOIN SVT_USUARIOS usu ON (os.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
 		query.append("WHERE os.ID_ORDEN_SERVICIO = " + this.idODS);
 		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
 	
-	public DatosRequest crearPagare() {
+	public DatosRequest crearPagare() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_PAGARE");
@@ -76,7 +78,7 @@ public class PagareServicio {
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		
 		String query = q.obtenerQueryInsertar();
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes());
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		
