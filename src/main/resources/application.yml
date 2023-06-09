@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: mssivimss-formatopagare
+    name: mssivimss-formato-pagare
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -25,8 +25,8 @@ logging:
     org.hibernate: error
 
 endpoints:
-   dominio: ${msit_GENERICO_CONSULTA}
-   generico-reportes: ${msit_GENERICO_REPORTES}
+   dominio: ${msit_CATALOGOS}
+   generico-reportes: ${msit_REPORTES_GENERALES}
 
 jwt:
   secretkey-flujo: ${msit_SECRET_KEY}
