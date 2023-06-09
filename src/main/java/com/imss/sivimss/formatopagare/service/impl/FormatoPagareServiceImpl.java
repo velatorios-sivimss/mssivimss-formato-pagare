@@ -2,10 +2,13 @@ package com.imss.sivimss.formatopagare.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.imss.sivimss.formatopagare.util.ProviderServiceRestTemplate;
 import com.imss.sivimss.formatopagare.util.Response;
+import com.imss.sivimss.formatopagare.model.response.ODSGeneradaResponse;
 import com.imss.sivimss.formatopagare.util.LogUtil;
 import com.imss.sivimss.formatopagare.model.request.UsuarioDto;
 import com.imss.sivimss.formatopagare.exception.BadRequestException;
@@ -37,11 +41,11 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	@Value("${endpoints.dominio}")
 	private String urlDominioGenerico;
 	
-	private static final String PAGINADO = "paginado";
+	private static final String PAGINADO = "/paginado";
 	
-	private static final String CONSULTA = "consulta";
+	private static final String CONSULTA = "/consulta";
 	
-	private static final String CREAR = "crear";
+	private static final String CREAR = "/crear";
 	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
@@ -63,7 +67,12 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	private ProviderServiceRestTemplate providerRestTemplate;
 	
 	@Autowired
+	private ModelMapper modelMapper;
+	
+	@Autowired
 	private LogUtil logUtil;
+	
+	private static final Logger log = LoggerFactory.getLogger(FormatoPagareServiceImpl.class);
 
 	@Override
 	public Response<?> consultarODS(DatosRequest request, Authentication authentication) throws IOException {
@@ -77,11 +86,43 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		    return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
 				authentication);
 		} catch (Exception e) {
-	        	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
-				return null;
+			log.error(e.getMessage());
+	        logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
 	    }
 	}
 
+	@Override
+	public Response<?> listadoODS(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		OrdenServicio ordenServicio = new OrdenServicio();
+		List<ODSGeneradaResponse> ODSResponse;
+		
+		String datosJson = String.valueOf(authentication.getPrincipal());
+		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
+		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.listadoODS(busqueda).getDatos(), urlDominioGenerico + CONSULTA, 
+				authentication);
+		
+		if (response.getCodigo() == 200) {
+			ODSResponse = Arrays.asList(modelMapper.map(response.getDatos(), ODSGeneradaResponse[].class));
+			response.setDatos(ConvertirGenerico.convertInstanceOfObject(ODSResponse));
+		}
+		return response;
+	}
+	
+	@Override
+	public Response<?> contratante(DatosRequest request, Authentication authentication) throws IOException {
+		OrdenServicio ordenServicio = new OrdenServicio();
+		
+		try {
+		    return providerRestTemplate.consumirServicio(ordenServicio.getContratante(request).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+	    }
+	}
+	
 	@Override
 	public Response<?> buscarODS(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
@@ -124,7 +165,13 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		PagareServicio pagareServicio = new PagareServicio();
 		pagareServicio.setIdODS(pagareDto.getIdODS());
 		
-		return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		try {
+		    return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+	    }
 	}
 
 	@Override
@@ -141,6 +188,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		try {
 		    return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
 		 } catch (Exception e) {
+			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 	     }

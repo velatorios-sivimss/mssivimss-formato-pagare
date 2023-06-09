@@ -11,6 +11,10 @@ public interface FormatoPagareService {
 	
 	Response<?> consultarODS(DatosRequest request, Authentication authentication) throws IOException;
 	
+	Response<?> listadoODS(DatosRequest request, Authentication authentication) throws IOException;
+	
+	Response<?> contratante(DatosRequest request, Authentication authentication) throws IOException;
+	
 	Response<?> buscarODS(DatosRequest request, Authentication authentication) throws IOException;
 	
 	Response<?> importeLetra(DatosRequest request, Authentication authentication) throws IOException;
