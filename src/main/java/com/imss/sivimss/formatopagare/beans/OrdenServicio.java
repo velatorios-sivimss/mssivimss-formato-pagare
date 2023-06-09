@@ -47,6 +47,41 @@ public class OrdenServicio {
 		return request;
 	}
 	
+	public DatosRequest listadoODS(BusquedaDto busqueda) throws UnsupportedEncodingException {
+		DatosRequest request = new DatosRequest();
+		Map<String, Object> parametro = new HashMap<>();
+		StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO, os.CVE_FOLIO \n");
+		query.append("FROM SVC_ORDEN_SERVICIO os \n");
+		query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
+		query.append("LEFT JOIN SVC_VELATORIO vel ON (fin.ID_VELATORIO = vel.ID_VELATORIO) \n");
+		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 ");
+		if (busqueda.getIdOficina() > 1) {
+			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
+			if (busqueda.getIdOficina() == 3) {
+				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+			}
+		} 
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		parametro.put(AppConstantes.QUERY, encoded);
+		request.setDatos(parametro);
+		return request;
+	}
+	
+	public DatosRequest getContratante(DatosRequest request) throws UnsupportedEncodingException {
+		String idODS = request.getDatos().get("id").toString();
+		StringBuilder query = new StringBuilder("SELECT CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante \n");
+		query.append("FROM SVC_ORDEN_SERVICIO os \n");
+		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
+		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
+		query.append("WHERE os.ID_ORDEN_SERVICIO = " + idODS);
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		
+		return request;
+	}
+	
 	public DatosRequest buscarODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) throws UnsupportedEncodingException {
 			
 	    	StringBuilder query = armaQuery(formatoFecha);
