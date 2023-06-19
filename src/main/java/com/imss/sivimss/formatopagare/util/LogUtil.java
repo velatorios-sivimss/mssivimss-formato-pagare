@@ -33,13 +33,15 @@ public class LogUtil {
             UsuarioDto usuarioDto = json.fromJson((String) authentication.getPrincipal(), UsuarioDto.class);
             File archivo = new File(rutaLog + nombreApp + "_" + new SimpleDateFormat("ddMMyyyy").format(new Date()) + ".log");
             FileWriter escribirArchivo = new FileWriter(archivo, true);
+            String contenido = "" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion;
+            log.info(contenido);
             if (archivo.exists()) {
-                escribirArchivo.write("" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion);
+                escribirArchivo.write(contenido);
                 escribirArchivo.write("\r\n");
                 escribirArchivo.close();
             } else {
                 archivo.createNewFile();
-                escribirArchivo.write("" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion);
+                escribirArchivo.write(contenido);
                 escribirArchivo.write("\r\n");
                 escribirArchivo.close();
             }
