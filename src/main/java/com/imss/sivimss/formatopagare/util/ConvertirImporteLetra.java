@@ -3,11 +3,13 @@ package com.imss.sivimss.formatopagare.util;
 public class ConvertirImporteLetra {
 	
 	public static String importeEnTexto(int iImporte ) {
-		String strImporte;
+		String strImporte = "";
 		// Obtiene unidad
 		int iUnidad = iImporte%10;
-		iImporte = iImporte/10;		
-		strImporte = ConvertirImporteLetra.unidadEnTexto(iUnidad);
+		iImporte = iImporte/10;
+		if (iUnidad>0 || iImporte==0) {
+		   strImporte = ConvertirImporteLetra.unidadEnTexto(iUnidad);
+		}
 		
 		// Obtiene decena
 		int iDecena = iImporte%10;
@@ -31,10 +33,10 @@ public class ConvertirImporteLetra {
 		
 		// Obtiene millar
 		int iMillar = iImporte%10;
-		if (!(iImporte > 10 && iImporte < 20)) {
+		if (iImporte > 0 && !(iImporte > 10 && iImporte < 20)) {
 			if (iMillar == 1) {
 				strImporte = "MIL " + strImporte; 
-			} else {
+			} else if (iMillar > 1) {
 				strImporte = unidadEnTexto(iMillar) + " MIL " + strImporte;
 			}
 		}

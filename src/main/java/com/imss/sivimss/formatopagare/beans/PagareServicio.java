@@ -55,8 +55,8 @@ public class PagareServicio {
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
-		query.append("LEFT JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_FLUJO_PAGOS) \n");
-		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
+		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
+		query.append("JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
 		query.append("JOIN SVT_USUARIOS usu ON (os.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
 		query.append("WHERE os.ID_ORDEN_SERVICIO = " + this.idODS);
 		
