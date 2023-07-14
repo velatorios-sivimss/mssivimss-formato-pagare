@@ -98,7 +98,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		OrdenServicio ordenServicio = new OrdenServicio();
 		List<ODSGeneradaResponse> ODSResponse;
 		
-		String datosJson = String.valueOf(authentication.getPrincipal());
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
 		Response<?> response = providerRestTemplate.consumirServicio(ordenServicio.listadoODS(busqueda).getDatos(), urlDominioGenerico + CONSULTA, 
 				authentication);
