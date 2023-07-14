@@ -113,10 +113,10 @@ public class OrdenServicio {
 	 
     private StringBuilder armaQuery(String formatoFecha) {
     	StringBuilder query = new StringBuilder("SELECT DISTINCT os.ID_ORDEN_SERVICIO AS id, os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, os.ID_CONTRATANTE AS idContratante, ");
-    	query.append("CONCAT(IFNULL(prc.NOM_PERSONA,' '),IFNULL(prc.NOM_PRIMER_APELLIDO,' '),IFNULL(prc.NOM_SEGUNDO_APELLIDO,' ')) AS nomContratante, \n");
+    	query.append("CONCAT(IFNULL(prc.NOM_PERSONA,' '),' ',IFNULL(prc.NOM_PRIMER_APELLIDO,' '),' ' ,IFNULL(prc.NOM_SEGUNDO_APELLIDO,' ')) AS nomContratante, \n");
     	query.append("fin.ID_FINADO AS idFinado,  \n");
     	query.append("CONCAT(prf.NOM_PERSONA,' ',prf.NOM_PRIMER_APELLIDO,' ',prf.NOM_SEGUNDO_APELLIDO) AS nomFinado,  \n");
-    	query.append("'Generada' AS estatusODS, CASE WHEN ISNULL(pb.CVE_ESTATUS_PAGO) THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
+    	query.append("'Generada' AS estatusODS, CASE WHEN pb.CVE_ESTATUS_PAGO = 8 THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
     	query.append("FROM SVC_ORDEN_SERVICIO os \n");
     	query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
     	query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
@@ -125,6 +125,7 @@ public class OrdenServicio {
     	query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
     	query.append("JOIN SVC_VELATORIO vel ON (vel.ID_VELATORIO = os.ID_VELATORIO) \n");
     	query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
+    	query.append("AND pb.CVE_ESTATUS_PAGO IN (2, 8) \n");
 		
 		return query;
     }
