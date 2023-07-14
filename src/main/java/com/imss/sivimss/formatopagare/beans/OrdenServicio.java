@@ -101,7 +101,7 @@ public class OrdenServicio {
 	    		query.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + busqueda.getNomContratante() + "%') \n");
 	    	}
 	    	if (busqueda.getFecIniODS() != null) {
-	    		query.append(" AND os.FEC_ALTA BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
+	    		query.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
 	    	}
 	    	query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
 	    	
@@ -144,7 +144,7 @@ public class OrdenServicio {
     		condicion.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + reporteDto.getNomContratante() + "%') \n");
 		}
     	if (reporteDto.getFecIniODS() != null) {
-    		condicion.append(" AND os.FEC_ALTA BETWEEN STR_TO_DATE('" + reporteDto.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinODS() + "','" + formatoFecha + "')");
+    		condicion.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + reporteDto.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinODS() + "','" + formatoFecha + "')");
     	}
 		
 		envioDatos.put("condicion", condicion.toString());
