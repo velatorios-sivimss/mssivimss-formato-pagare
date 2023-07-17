@@ -46,7 +46,7 @@ public class PagareServicio {
 	
 	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
-		query.append("TIME(os.FEC_ALTA) AS hora, IFNULL(pd.IMP_IMPORTE,0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
+		query.append("TIME(os.FEC_ALTA) AS hora, IFNULL(SUM(pd.IMP_IMPORTE),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
 		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, \n");
@@ -58,7 +58,8 @@ public class PagareServicio {
 		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
 		query.append("JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
 		query.append("JOIN SVT_USUARIOS usu ON (os.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
-		query.append("WHERE os.ID_ORDEN_SERVICIO = " + this.idODS);
+		query.append("WHERE pb.CVE_ESTATUS_PAGO IN (2, 8) \n");
+		query.append("AND os.ID_ORDEN_SERVICIO = " + this.idODS);
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
