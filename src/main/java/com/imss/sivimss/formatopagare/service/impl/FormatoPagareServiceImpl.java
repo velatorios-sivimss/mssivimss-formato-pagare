@@ -47,6 +47,8 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	
 	private static final String CREAR = "/crear";
 	
+	private static final String ACTUALIZAR = "/actualizar";
+	
 	@Value("${endpoints.generico-reportes}")
 	private String urlReportes;
 	
@@ -184,14 +186,17 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		
 		PagareServicio pagareServicio = new PagareServicio(pagareDto);
 		pagareServicio.setIdUsuarioAlta(usuarioDto.getIdUsuario());
+		pagareServicio.setIdUsuarioModifica(usuarioDto.getIdUsuario());
+		providerRestTemplate.consumirServicio(pagareServicio.actualizaPB().getDatos(), urlDominioGenerico + ACTUALIZAR, authentication);
 		
 		try {
-		    return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
+			return providerRestTemplate.consumirServicio(pagareServicio.crearPagare().getDatos(), urlDominioGenerico + CREAR, authentication);
 		 } catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), ALTA, authentication);
 			return null;
 	     }
+		
 	}
 
 	@Override

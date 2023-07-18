@@ -66,6 +66,24 @@ public class PagareServicio {
 		return request;
 	}
 	
+	 public DatosRequest actualizaPB() throws UnsupportedEncodingException {
+		    DatosRequest request = new DatosRequest();
+			Map<String, Object> parametro = new HashMap<>();
+	        final QueryHelper q = new QueryHelper("UPDATE SVT_PAGO_BITACORA");
+	        q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
+	        q.agregarParametroValues("ID_USUARIO_MODIFICA", this.getIdUsuarioModifica().toString());
+	        q.agregarParametroValues("GEN_PAGARE", "0");
+	        q.addWhere("ID_REGISTRO = " + this.getIdODS());
+	        q.addWhere("AND ID_FLUJO_PAGOS = 1");
+
+	        String query = q.obtenerQueryActualizar();
+	        String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+			parametro.put(AppConstantes.QUERY, encoded);
+			request.setDatos(parametro);
+			
+			return request;
+    }
+
 	public DatosRequest crearPagare() throws UnsupportedEncodingException {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
