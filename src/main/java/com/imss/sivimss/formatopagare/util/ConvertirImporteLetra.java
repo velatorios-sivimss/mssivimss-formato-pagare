@@ -55,7 +55,7 @@ public class ConvertirImporteLetra {
 			}
 		}
 		
-		return strImporte + " 00/100 M.N.";
+		return strImporte + " PESOS 00/100 M.N.";
 	}
 	
 	private static String unidadEnTexto(int iNumero){

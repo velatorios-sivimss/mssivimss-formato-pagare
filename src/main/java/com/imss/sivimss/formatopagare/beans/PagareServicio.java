@@ -73,7 +73,7 @@ public class PagareServicio {
 	        q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
 	        q.agregarParametroValues("ID_USUARIO_MODIFICA", this.getIdUsuarioModifica().toString());
 	        q.agregarParametroValues("GEN_PAGARE", "0");
-	        q.addWhere("ID_REGISTRO = " + this.getIdODS());
+	        q.addWhere("ID_REGISTRO = " + this.idODS);
 	        q.addWhere("AND ID_FLUJO_PAGOS = 1");
 
 	        String query = q.obtenerQueryActualizar();
