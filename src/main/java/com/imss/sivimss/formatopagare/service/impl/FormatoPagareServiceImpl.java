@@ -83,15 +83,22 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		
 		String datosJson = String.valueOf(authentication.getPrincipal());
 		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
-
+		Response <?> response = null;
+		
 		try {
-		    return providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
+		    response =  providerRestTemplate.consumirServicio(ordenServicio.obtenerODS(request, busqueda, formatoFecha).getDatos(), urlDominioGenerico + PAGINADO, 
 				authentication);
+		    ArrayList datos1 = (ArrayList) ((LinkedHashMap) response.getDatos()).get("content");
+			if (datos1.isEmpty()) {
+				response.setMensaje(INFONOENCONTRADA);
+		    }
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	        logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
 			return null;
 	    }
+		
+		return response;
 	}
 
 	@Override

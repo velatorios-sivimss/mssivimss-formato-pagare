@@ -33,12 +33,15 @@ public class OrdenServicio {
 	
 	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = armaQuery(formatoFecha);
-		if (busqueda.getIdOficina() > 1) {
+		if (busqueda.getIdDelegacion() != null) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
-			if (busqueda.getIdOficina() == 3) {
-				query.append(" AND os.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
-			}
 		} 
+		if (busqueda.getIdVelatorio() != null) {
+			query.append(" AND os.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+		} 
+		if (busqueda.getIdDelegacion() == null && busqueda.getIdVelatorio() == null) {
+			query.append(" AND os.ID_VELATORIO = 99");
+		}
         
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
@@ -56,10 +59,10 @@ public class OrdenServicio {
 		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 ");
 		if (busqueda.getIdDelegacion() != null) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
-			if (busqueda.getIdVelatorio() != null) {
-				query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
-			}
 		} 
+		if (busqueda.getIdVelatorio() != null) {
+			query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+		}
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
