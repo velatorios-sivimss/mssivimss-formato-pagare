@@ -54,14 +54,13 @@ public class OrdenServicio {
 		Map<String, Object> parametro = new HashMap<>();
 		StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO, os.CVE_FOLIO \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
-		query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
 		query.append("JOIN SVC_VELATORIO vel ON (os.ID_VELATORIO = vel.ID_VELATORIO) \n");
 		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 ");
 		if (busqueda.getIdDelegacion() != null) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 		} 
 		if (busqueda.getIdVelatorio() != null) {
-			query.append(" AND fin.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
+			query.append(" AND vel.ID_VELATORIO = ").append(busqueda.getIdVelatorio());
 		}
 		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
