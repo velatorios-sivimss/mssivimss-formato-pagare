@@ -42,7 +42,8 @@ public class OrdenServicio {
 		if (busqueda.getIdDelegacion() == null && busqueda.getIdVelatorio() == null) {
 			query.append(" AND os.ID_VELATORIO = 99");
 		}
-        
+		query.append(" ORDER BY os.FEC_ALTA ASC");
+		
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		
@@ -105,7 +106,7 @@ public class OrdenServicio {
 	    	if (busqueda.getFecIniODS() != null) {
 	    		query.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
 	    	}
-	    	query.append(" ORDER BY os.ID_ORDEN_SERVICIO DESC");
+	    	query.append(" ORDER BY os.FEC_ALTA ASC");
 	    	
 	    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 			request.getDatos().put(AppConstantes.QUERY, encoded);
