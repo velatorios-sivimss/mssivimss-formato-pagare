@@ -46,7 +46,7 @@ public class PagareServicio {
 	
 	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
-		query.append("TIME(os.FEC_ALTA) AS hora, pb.DESC_VALOR - IFNULL(SUM(pd.IMP_IMPORTE),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
+		query.append("TIME(os.FEC_ALTA) AS hora, pb.DESC_VALOR - IFNULL(SUM(pd.IMP_PAGO),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
 		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, \n");
