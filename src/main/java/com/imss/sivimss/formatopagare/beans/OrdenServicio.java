@@ -99,9 +99,9 @@ public class OrdenServicio {
 	    	    query.append(" AND os.CVE_FOLIO = '" + busqueda.getFolioODS() +"' ");
 	    	}
 	    	if (busqueda.getNomContratante() != null) {
-	    		query.append(" AND (prc.NOM_PERSONA LIKE '%" + busqueda.getNomContratante() + "%'");
-	    		query.append(" OR prc.NOM_PRIMER_APELLIDO LIKE '%" + busqueda.getNomContratante() + "%'");
-	    		query.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + busqueda.getNomContratante() + "%') \n");
+	    		query.append(" AND (UPPER(prc.NOM_PERSONA) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%'");
+	    		query.append(" OR UPPER(prc.NOM_PRIMER_APELLIDO) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%'");
+	    		query.append(" OR UPPER(prc.NOM_SEGUNDO_APELLIDO) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%') \n");
 	    	}
 	    	if (busqueda.getFecIniODS() != null) {
 	    		query.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
@@ -143,9 +143,9 @@ public class OrdenServicio {
     	    condicion.append(" AND os.CVE_FOLIO = '" + reporteDto.getFolioODS() +"' ");
     	}
 		if (reporteDto.getNomContratante() != null) {
-			condicion.append(" AND (prc.NOM_PERSONA LIKE '%" + reporteDto.getNomContratante() + "%'");
-    		condicion.append(" OR prc.NOM_PRIMER_APELLIDO LIKE '%" + reporteDto.getNomContratante() + "%'");
-    		condicion.append(" OR prc.NOM_SEGUNDO_APELLIDO LIKE '%" + reporteDto.getNomContratante() + "%') \n");
+			condicion.append(" AND (UPPER(prc.NOM_PERSONA) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%'");
+    		condicion.append(" OR UPPER(prc.NOM_PRIMER_APELLIDO) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%'");
+    		condicion.append(" OR UPPER(prc.NOM_SEGUNDO_APELLIDO) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%') \n");
 		}
     	if (reporteDto.getFecIniODS() != null) {
     		condicion.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + reporteDto.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinODS() + "','" + formatoFecha + "')");
