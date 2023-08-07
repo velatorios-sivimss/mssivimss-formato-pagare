@@ -166,7 +166,10 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 	public Response<?> detallePagare(DatosRequest request, Authentication authentication) throws IOException {
 		Gson gson = new Gson();
 
-		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		String datosJson = String.valueOf(authentication.getPrincipal());
+		UsuarioDto usuarioDto = gson.fromJson(datosJson, UsuarioDto.class);
+		
+		datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
 		PagareServicioDto pagareDto = gson.fromJson(datosJson, PagareServicioDto.class);
 		if (pagareDto.getIdODS() == null) {
 			throw new BadRequestException(HttpStatus.BAD_REQUEST, "Informacion incompleta");
@@ -175,7 +178,7 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		pagareServicio.setIdODS(pagareDto.getIdODS());
 		
 		try {
-		    return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		    return providerRestTemplate.consumirServicio(pagareServicio.detallPagare(request, usuarioDto.getNombre(), formatoFecha).getDatos(), urlDominioGenerico + CONSULTA, authentication);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);

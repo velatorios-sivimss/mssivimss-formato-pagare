@@ -44,20 +44,18 @@ public class PagareServicio {
 		return ConvertirImporteLetra.importeEnTexto(this.importe);
 	}
 	
-	public DatosRequest detallPagare(DatosRequest request, String formatoFecha) throws UnsupportedEncodingException {
+	public DatosRequest detallPagare(DatosRequest request, String usuario, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
 		query.append("TIME(os.FEC_ALTA) AS hora, pb.DESC_VALOR - IFNULL(SUM(pd.IMP_PAGO),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
 		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
 		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
-		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, \n");
-		query.append("CONCAT(usu.NOM_USUARIO,' ',usu.NOM_APELLIDO_PATERNO,' ',usu.NOM_APELLIDO_MATERNO) AS nomUsuario \n");
+		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, '" +usuario + "' AS nomUsuario \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
 		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
 		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
-		query.append("JOIN SVT_USUARIOS usu ON (os.ID_USUARIO_ALTA = usu.ID_USUARIO) \n");
 		query.append("WHERE pb.CVE_ESTATUS_PAGO IN (2, 8) \n");
 		query.append("AND os.ID_ORDEN_SERVICIO = " + this.idODS);
 		
