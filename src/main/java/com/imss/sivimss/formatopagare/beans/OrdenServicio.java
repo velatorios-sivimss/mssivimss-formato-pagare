@@ -143,9 +143,7 @@ public class OrdenServicio {
     	    condicion.append(" AND os.CVE_FOLIO = '" + reporteDto.getFolioODS() +"' ");
     	}
 		if (reporteDto.getNomContratante() != null) {
-			condicion.append(" AND (UPPER(prc.NOM_PERSONA) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%'");
-    		condicion.append(" OR UPPER(prc.NOM_PRIMER_APELLIDO) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%'");
-    		condicion.append(" OR UPPER(prc.NOM_SEGUNDO_APELLIDO) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%') \n");
+			condicion.append(" AND CONCAT(IFNULL(prc.NOM_PERSONA,' '),' ',IFNULL(prc.NOM_PRIMER_APELLIDO,' '),' ' ,IFNULL(prc.NOM_SEGUNDO_APELLIDO,' ')) LIKE '%" + reporteDto.getNomContratante().toUpperCase() + "%'");
 		}
     	if (reporteDto.getFecIniODS() != null) {
     		condicion.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + reporteDto.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + reporteDto.getFecFinODS() + "','" + formatoFecha + "')");
