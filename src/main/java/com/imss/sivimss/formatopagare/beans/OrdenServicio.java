@@ -56,7 +56,9 @@ public class OrdenServicio {
 		StringBuilder query = new StringBuilder("SELECT os.ID_ORDEN_SERVICIO, os.CVE_FOLIO \n");
 		query.append("FROM SVC_ORDEN_SERVICIO os \n");
 		query.append("JOIN SVC_VELATORIO vel ON (os.ID_VELATORIO = vel.ID_VELATORIO) \n");
-		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 ");
+		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
+		query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
+		query.append("AND pb.CVE_ESTATUS_PAGO IN (2, 8) ");
 		if (busqueda.getIdDelegacion() != null) {
 			query.append(" AND vel.ID_DELEGACION = ").append(busqueda.getIdDelegacion());
 		} 
@@ -99,9 +101,7 @@ public class OrdenServicio {
 	    	    query.append(" AND os.CVE_FOLIO = '" + busqueda.getFolioODS() +"' ");
 	    	}
 	    	if (busqueda.getNomContratante() != null) {
-	    		query.append(" AND (UPPER(prc.NOM_PERSONA) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%'");
-	    		query.append(" OR UPPER(prc.NOM_PRIMER_APELLIDO) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%'");
-	    		query.append(" OR UPPER(prc.NOM_SEGUNDO_APELLIDO) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%') \n");
+	    		query.append(" AND CONCAT(IFNULL(prc.NOM_PERSONA,' '),' ',IFNULL(prc.NOM_PRIMER_APELLIDO,' '),' ' ,IFNULL(prc.NOM_SEGUNDO_APELLIDO,' ')) LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%'");
 	    	}
 	    	if (busqueda.getFecIniODS() != null) {
 	    		query.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
@@ -122,9 +122,9 @@ public class OrdenServicio {
     	query.append("'Generada' AS estatusODS, CASE WHEN pb.CVE_ESTATUS_PAGO = 8 THEN 'Pendiente' ELSE 'Generado' END AS estatusPago \n");
     	query.append("FROM SVC_ORDEN_SERVICIO os \n");
     	query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
-    	query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
+    	query.append("LEFT JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
     	query.append("JOIN SVC_FINADO fin ON (os.ID_ORDEN_SERVICIO = fin.ID_ORDEN_SERVICIO) \n");
-    	query.append("JOIN SVC_PERSONA prf ON (fin.ID_PERSONA = prf.ID_PERSONA) \n");
+    	query.append("LEFT JOIN SVC_PERSONA prf ON (fin.ID_PERSONA = prf.ID_PERSONA) \n");
     	query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
     	query.append("JOIN SVC_VELATORIO vel ON (vel.ID_VELATORIO = os.ID_VELATORIO) \n");
     	query.append("WHERE os.ID_ESTATUS_ORDEN_SERVICIO = 2 \n");
