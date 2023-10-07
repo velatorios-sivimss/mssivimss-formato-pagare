@@ -235,5 +235,20 @@ public class FormatoPagareServiceImpl implements FormatoPagareService {
 		return MensajeResponseUtil.mensajeConsultaResponse(response, ERROR_DESCARGA);
 	}
 
+	@Override
+	public Response<?> buscarContratante(DatosRequest request, Authentication authentication) throws IOException {
+		Gson gson = new Gson();
+		OrdenServicio ordenServicio = new OrdenServicio();
+		String datosJson = String.valueOf(request.getDatos().get(AppConstantes.DATOS));
+		BusquedaDto busqueda = gson.fromJson(datosJson, BusquedaDto.class);
+		
+		try {
+		    return providerRestTemplate.consumirServicio(ordenServicio.buscarContratante(request, busqueda).getDatos(), urlDominioGenerico + CONSULTA, authentication);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+	       	logUtil.crearArchivoLog(Level.SEVERE.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), e.getMessage(), CONSULTA, authentication);
+			return null;
+	    }
+	}
 }
 	

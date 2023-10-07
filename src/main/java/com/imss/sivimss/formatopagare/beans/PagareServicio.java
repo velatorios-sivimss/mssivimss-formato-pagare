@@ -6,8 +6,10 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.imss.sivimss.formatopagare.util.AppConstantes;
-import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
 import com.imss.sivimss.formatopagare.model.request.FormatoPagareDto;
 import com.imss.sivimss.formatopagare.model.request.PagareServicioDto;
 import com.imss.sivimss.formatopagare.util.DatosRequest;
@@ -27,10 +29,12 @@ import lombok.Setter;
 @Getter
 public class PagareServicio {
 
+	private static final Logger log = LoggerFactory.getLogger(PagareServicio.class);
+	
 	private Integer id;
 	private Integer idODS;
 	private Integer importe;
-	private Integer redito;
+	private Double redito;
 	private Integer idUsuarioAlta;
 	private Integer idUsuarioModifica;
 	
@@ -75,6 +79,7 @@ public class PagareServicio {
 	        q.addWhere("AND ID_FLUJO_PAGOS = 1");
 
 	        String query = q.obtenerQueryActualizar();
+			log.info(query);
 	        String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 			parametro.put(AppConstantes.QUERY, encoded);
 			request.setDatos(parametro);
@@ -95,6 +100,7 @@ public class PagareServicio {
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
 		
 		String query = q.obtenerQueryInsertar();
+		log.info(query);
 		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);

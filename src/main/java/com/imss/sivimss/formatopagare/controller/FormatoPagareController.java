@@ -140,7 +140,18 @@ public class FormatoPagareController {
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 		
 	}
-
+	
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackGenerico")
+	@TimeLimiter(name = "msflujo")
+	@PostMapping("/buscar/contratante")
+	public CompletableFuture<?> bucarContratante(@RequestBody DatosRequest request, Authentication authentication) throws IOException {
+		
+		Response<?> response = formatoPagareService.buscarContratante(request, authentication);
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+		
+	}
 	/**
 	 * fallbacks generico
 	 * 

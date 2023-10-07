@@ -13,6 +13,6 @@ public class PagareServicioDto {
 	private Integer id;
 	private Integer idODS;
 	private Integer importe;
-	private Integer redito;
+	private Double redito;
 	
 }

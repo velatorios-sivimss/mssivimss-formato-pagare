@@ -6,6 +6,9 @@ import java.util.Map;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.imss.sivimss.formatopagare.util.AppConstantes;
 import com.imss.sivimss.formatopagare.model.request.BusquedaDto;
 import com.imss.sivimss.formatopagare.util.DatosRequest;
@@ -30,6 +33,8 @@ public class OrdenServicio {
 	private String nomContratante;
 	private Integer estatusODS;
     private Integer estatusPago;
+
+	private static final Logger log = LoggerFactory.getLogger(OrdenServicio.class);
 	
 	public DatosRequest obtenerODS(DatosRequest request, BusquedaDto busqueda, String formatoFecha) throws UnsupportedEncodingException {
 		StringBuilder query = armaQuery(formatoFecha);
@@ -158,5 +163,18 @@ public class OrdenServicio {
 		
 		return envioDatos;
 	}
-    
+	
+	public DatosRequest buscarContratante(DatosRequest request, BusquedaDto busqueda) throws UnsupportedEncodingException {
+		StringBuilder query = new StringBuilder("SELECT CONCAT(sp.NOM_PERSONA,' ',sp.NOM_PRIMER_APELLIDO,' ',sp.NOM_SEGUNDO_APELLIDO) AS nomContratante ");
+			query.append(" FROM SVC_CONTRATANTE sc ");
+			query.append(" JOIN SVC_PERSONA sp ON sp.ID_PERSONA = sc.ID_PERSONA ");
+			query.append(" WHERE UPPER(sp.NOM_PERSONA)  LIKE '%" + busqueda.getNomContratante().toUpperCase() + "%' ");
+			query.append(" GROUP BY 1");
+		log.info(query.toString());
+		
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+		request.getDatos().put(AppConstantes.QUERY, encoded);
+		
+		return request;
+	}
 }
