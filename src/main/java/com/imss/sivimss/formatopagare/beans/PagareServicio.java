@@ -122,6 +122,7 @@ public class PagareServicio {
 		envioDatos.put("nomUsuario", formatoDto.getNomUsuario());
 		envioDatos.put("tipoReporte", formatoDto.getTipoReporte());
 		envioDatos.put("rutaNombreReporte", nombrePdfNotaRem);
+		envioDatos.put("horaODS", formatoDto.getHoraODS());
 		
 		return envioDatos;
 	 }
