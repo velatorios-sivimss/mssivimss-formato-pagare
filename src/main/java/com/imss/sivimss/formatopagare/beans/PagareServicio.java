@@ -1,6 +1,7 @@
 package com.imss.sivimss.formatopagare.beans;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,22 +49,23 @@ public class PagareServicio {
 		return ConvertirImporteLetra.importeEnTexto(this.importe);
 	}
 	
-	public DatosRequest detallPagare(DatosRequest request, String usuario, String formatoFecha) throws UnsupportedEncodingException {
-		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS, \n");
-		query.append("TIME(os.FEC_ALTA) AS hora, pb.DESC_VALOR - IFNULL(SUM(pd.IMP_PAGO),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare, \n");
-		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante, \n");
-		query.append("IFNULL(CONCAT(dom.DES_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.DES_COLONIA),'') AS domContratante, \n");
-		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, '" +usuario + "' AS nomUsuario \n");
-		query.append("FROM SVC_ORDEN_SERVICIO os \n");
-		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
-		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
-		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO) \n");
-		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1) \n");
-		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA) \n");
-		query.append("WHERE pb.CVE_ESTATUS_PAGO IN (2, 8) \n");
+	public DatosRequest detallPagare(DatosRequest request, String usuario, String formatoFecha) {
+		StringBuilder query = new StringBuilder("SELECT os.CVE_FOLIO AS folioODS, DATE_FORMAT(os.FEC_ALTA,'" + formatoFecha + "') AS fechaODS,  ");
+		query.append("TIME(os.FEC_ALTA) AS hora, pb.IMP_VALOR - IFNULL(SUM(pd.IMP_PAGO),0) AS importe, 6.0 AS redito, os.CVE_FOLIO AS folioPagare,  ");
+		query.append("CONCAT(prc.NOM_PERSONA,' ',prc.NOM_PRIMER_APELLIDO,' ',prc.NOM_SEGUNDO_APELLIDO) AS nomContratante,  ");
+		query.append("IFNULL(CONCAT(dom.REF_CALLE,' ',dom.NUM_EXTERIOR,' ',dom.REF_COLONIA),'') AS domContratante,  ");
+		query.append("date_format(os.FEC_ALTA,'" + formatoFecha + "') AS fechaPago, '" +usuario + "' AS nomUsuario  ");
+		query.append("FROM SVC_ORDEN_SERVICIO os  ");
+		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE)  ");
+		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA)  ");
+		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO)  ");
+		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1)  ");
+		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA)  ");
+		query.append("WHERE pb.CVE_ESTATUS_PAGO IN (2, 8)  ");
 		query.append("AND os.ID_ORDEN_SERVICIO = " + this.idODS);
-		
-		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
+
+		log.info(query.toString());
+		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes(StandardCharsets.UTF_8));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		return request;
 	}
@@ -74,20 +76,20 @@ public class PagareServicio {
 	        final QueryHelper q = new QueryHelper("UPDATE SVT_PAGO_BITACORA");
 	        q.agregarParametroValues("FEC_ACTUALIZACION", "NOW()");
 	        q.agregarParametroValues("ID_USUARIO_MODIFICA", this.getIdUsuarioModifica().toString());
-	        q.agregarParametroValues("GEN_PAGARE", "0");
+	        q.agregarParametroValues("IND_GEN_PAGARE", "0");
 	        q.addWhere("ID_REGISTRO = " + this.idODS);
 	        q.addWhere("AND ID_FLUJO_PAGOS = 1");
 
 	        String query = q.obtenerQueryActualizar();
 			log.info(query);
-	        String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+	        String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 			parametro.put(AppConstantes.QUERY, encoded);
 			request.setDatos(parametro);
 			
 			return request;
     }
 
-	public DatosRequest crearPagare() throws UnsupportedEncodingException {
+	public DatosRequest crearPagare() {
 		DatosRequest request = new DatosRequest();
 		Map<String, Object> parametro = new HashMap<>();
 		final QueryHelper q = new QueryHelper("INSERT INTO SVT_PAGARE");
@@ -96,12 +98,13 @@ public class PagareServicio {
 		q.agregarParametroValues("IMP_PAGO", "" + this.importe);
 		q.agregarParametroValues("NUM_REDITO", "" + this.redito);
 		q.agregarParametroValues("FEC_ALTA", "DATE (NOW())");
-		q.agregarParametroValues("DES_CANTIDAD", "''");
+		q.agregarParametroValues("NUM_CANTIDAD", "''");
 		q.agregarParametroValues("ID_USUARIO_ALTA", "'" + this.idUsuarioAlta + "'");
+		q.agregarParametroValues("REF_FIRMA", "''");
 		
 		String query = q.obtenerQueryInsertar();
 		log.info(query);
-		String encoded = DatatypeConverter.printBase64Binary(query.getBytes("UTF-8"));
+		String encoded = DatatypeConverter.printBase64Binary(query.getBytes(StandardCharsets.UTF_8));
 		parametro.put(AppConstantes.QUERY, encoded);
 		request.setDatos(parametro);
 		

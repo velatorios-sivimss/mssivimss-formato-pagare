@@ -84,7 +84,8 @@ public class OrdenServicio {
 		query.append("JOIN SVC_CONTRATANTE con ON (os.ID_CONTRATANTE = con.ID_CONTRATANTE) \n");
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA) \n");
 		query.append("WHERE os.ID_ORDEN_SERVICIO = " + idODS);
-		
+
+		log.info(query.toString());
 		String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 		request.getDatos().put(AppConstantes.QUERY, encoded);
 		
@@ -112,7 +113,8 @@ public class OrdenServicio {
 	    		query.append(" AND DATE(os.FEC_ALTA) BETWEEN STR_TO_DATE('" + busqueda.getFecIniODS() + "','" + formatoFecha + "') AND STR_TO_DATE('" + busqueda.getFecFinODS() + "','" + formatoFecha + "')");
 	    	}
 	    	query.append(" ORDER BY os.FEC_ALTA ASC");
-	    	
+
+			log.info(query.toString());
 	    	String encoded = DatatypeConverter.printBase64Binary(query.toString().getBytes("UTF-8"));
 			request.getDatos().put(AppConstantes.QUERY, encoded);
 	    	
