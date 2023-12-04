@@ -2,8 +2,16 @@ package com.imss.sivimss.formatopagare.util;
 
 public class ConvertirImporteLetra {
 	
-	public static String importeEnTexto(int iImporte ) {
+	public static String importeEnTexto(Double importe ) {
+		
 		String strImporte = "";
+		Integer iImporte = importe.intValue();
+		importe = importe * 100;
+		Integer decimal = importe.intValue();
+		decimal = decimal %100;
+		String strImporteDec = "";
+		String letra;
+		
 		// Obtiene unidad
 		int iUnidad = iImporte%10;
 		iImporte = iImporte/10;
@@ -55,7 +63,31 @@ public class ConvertirImporteLetra {
 			}
 		}
 		
-		return strImporte + " PESOS 00/100 M.N.";
+		/**
+		 * Obtenemos los decimales
+		 *  **/
+		// Obtiene unidad
+		iUnidad = decimal%10;
+		decimal = decimal/10;
+		if (iUnidad>0 || iImporte==0) {
+			strImporteDec = ConvertirImporteLetra.unidadEnTexto(iUnidad);
+		}
+		
+		// Obtiene decena
+		iDecena = decimal%10;
+		decimal = decimal/10;
+		if (iUnidad==0 && iDecena>0) {
+			strImporteDec = decenaEnTexto(iDecena);
+		} else if (iDecena==1) {
+			strImporteDec = decenas(10+iUnidad);
+		} else if (iDecena > 1) {
+			strImporteDec = decenaEnTexto(iDecena) + " Y " + strImporteDec;
+		}
+		
+		letra = strImporte + " PESOS CON " +  strImporteDec
+				+ " CENTAVOS 00/100 M.N.";
+		
+		return letra;
 	}
 	
 	private static String unidadEnTexto(int iNumero){

@@ -34,7 +34,7 @@ public class PagareServicio {
 	
 	private Integer id;
 	private Integer idODS;
-	private Integer importe;
+	private Double importe;
 	private Double redito;
 	private Integer idUsuarioAlta;
 	private Integer idUsuarioModifica;
