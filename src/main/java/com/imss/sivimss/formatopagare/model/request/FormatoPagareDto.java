@@ -14,7 +14,7 @@ public class FormatoPagareDto {
 	
 	private String folioPagare;
 	
-	private Integer importe;
+	private Double importe;
 	
 	private String redito;
 	
