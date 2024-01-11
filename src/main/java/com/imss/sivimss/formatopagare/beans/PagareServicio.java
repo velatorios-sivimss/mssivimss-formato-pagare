@@ -60,7 +60,7 @@ public class PagareServicio {
 		query.append("JOIN SVC_PERSONA prc ON (con.ID_PERSONA = prc.ID_PERSONA)  ");
 		query.append("JOIN SVT_DOMICILIO dom ON (con.ID_DOMICILIO = dom.ID_DOMICILIO)  ");
 		query.append("JOIN SVT_PAGO_BITACORA pb ON (os.ID_ORDEN_SERVICIO = pb.ID_REGISTRO AND pb.ID_FLUJO_PAGOS = 1)  ");
-		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA)  ");
+		query.append("LEFT JOIN SVT_PAGO_DETALLE pd ON (pb.ID_PAGO_BITACORA = pd.ID_PAGO_BITACORA AND pd.CVE_ESTATUS = 4 )  ");
 		query.append("WHERE pb.CVE_ESTATUS_PAGO IN (2, 8)  ");
 		query.append("AND os.ID_ORDEN_SERVICIO = " + this.idODS);
 
